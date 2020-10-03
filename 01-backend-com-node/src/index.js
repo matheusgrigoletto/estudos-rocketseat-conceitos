@@ -1,5 +1,6 @@
 // imports
 const express = require("express");
+const { uuid } = require("uuidv4");
 
 // => Atenção: as intruções devem ser definidas/executadas na ordem certa,
 //    de cima pra baixo
@@ -29,63 +30,77 @@ app.use(express.json());
  *    vindo via JSON
  */
 
+// variável de memória, criada toda vez que inicia o app #NSFP (Non Safe For Production)
+const projects = [];
+
 // HTTP GET
 app.get("/projects", (request, response) => {
-  const { title, owner } = request.query;
+  const { title } = request.query;
+
+  // caso fizer um filtro
+  const results = title
+    ? projects.filter((project) => project.title.includes(title))
+    : projects;
 
   // retornando um json
-  return response.json({
-    data: ["Projeto Ambar", "Projeto Blackbird", "Projeto Codecanyon"],
-    title,
-    owner,
-  });
+  return response.json(results);
 });
 
 // HTTP POST
 app.post("/projects", (request, response) => {
   const { title, owner } = request.body;
 
-  // => lógica para tratar e salvar dados enviados ...
-
-  // retornar alguma informação
-  return response.json({
-    data: [
-      "Projeto Ambar",
-      "Projeto Blackbird",
-      "Projeto Codecanyon",
-      "Projeto Destinybond",
-    ],
+  const project = {
+    id: uuid(),
     title,
     owner,
-  });
+  };
+
+  projects.push(project);
+
+  // retornar objeto criado
+  return response.json(project);
 });
 
 // HTTP PUT
 app.put("/projects/:id", (request, response) => {
   const { id } = request.params;
+  const { title, owner } = request.body;
 
-  // => lógica para tratar e salvar (atualizar) os dados enviados ...
+  // buscar a posição do projeto no array
+  const projectIndex = projects.findIndex((project) => project.id === id);
 
-  return response.json({
-    data: [
-      "Projeto Ambar",
-      "Projeto Blackbird",
-      "Projeto CleanCyan",
-      "Projeto Destinybond",
-    ],
+  // não encontrado
+  if (projectIndex < 0) {
+    return response.status(400).json({ error: "Project not found" });
+  }
+
+  const project = {
     id,
-  });
+    title,
+    owner,
+  };
+
+  projects[projectIndex] = project;
+
+  return response.json(project);
 });
 
 // HTTP DELETE
 app.delete("/projects/:id", (request, response) => {
   const { id } = request.params;
 
-  // => lógica para tratar excluir os dados enviados ...
+  // buscar a posição do projeto no array
+  const projectIndex = projects.findIndex((project) => project.id === id);
 
-  return response.json({
-    data: ["Projeto Ambar", "Projeto Blackbird", "Projeto CleanCyan"],
-  });
+  // não encontrado
+  if (projectIndex < 0) {
+    return response.status(400).json({ error: "Project not found" });
+  }
+
+  projects.splice(projectIndex, 1);
+
+  return response.status(204).send();
 });
 
 // servidor executando na porta 3333

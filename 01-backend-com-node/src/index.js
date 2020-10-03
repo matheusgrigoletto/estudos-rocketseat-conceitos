@@ -13,4 +13,4 @@ app.get("/", (request, response) => {
 });
 
 // servidor executando na porta 3333
-app.listen(3333);
+app.listen(3333, () => console.log("🚀 Server started!"));

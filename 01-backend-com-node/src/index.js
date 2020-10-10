@@ -1,6 +1,6 @@
 // imports
 const express = require("express");
-const { uuid } = require("uuidv4");
+const { v4, validate } = require("uuid");
 
 // => Atenção: as intruções devem ser definidas/executadas na ordem certa,
 //    de cima pra baixo
@@ -30,28 +30,67 @@ app.use(express.json());
  *    vindo via JSON
  */
 
+/**
+ * Middleware:
+ *
+ * Interceptador de requisições que pode interromper totalmente a requisição ou alterar dados da requisição.
+ * Geralmente usado que um trecho de código seja disparado após uma requisição e antes de enviar uma resposta.
+ */
+
+function logRequest(request, response, next) {
+  const { method, url } = request;
+
+  const logLabel = `[${method.toUpperCase()}] ${url}`;
+
+  console.time(logLabel);
+
+  next(); // Chama próximo middleware
+
+  console.timeEnd(logLabel);
+}
+
+function validateProjectId(request, response, next) {
+  const { id } = request.params;
+
+  if (!validate(id)) {
+    return response.status(400).json({ error: "Invalid Project ID." });
+  }
+
+  return next();
+}
+
+// Aplicar para todas as rotas/requisições
+app.use(logRequest);
+
+// Aplicar apenas nas rotas específicas
+app.use("/projects/:id", validateProjectId);
+
 // variável de memória, criada toda vez que inicia o app #NSFP (Non Safe For Production)
 const projects = [];
 
 // HTTP GET
-app.get("/projects", (request, response) => {
-  const { title } = request.query;
+app.get(
+  "/projects",
+  /*logRequest,*/ (request, response) => {
+    // usar logRequest (middleware) apenas nas rotas específicas
+    const { title } = request.query;
 
-  // caso fizer um filtro
-  const results = title
-    ? projects.filter((project) => project.title.includes(title))
-    : projects;
+    // caso fizer um filtro
+    const results = title
+      ? projects.filter((project) => project.title.includes(title))
+      : projects;
 
-  // retornando um json
-  return response.json(results);
-});
+    // retornando um json
+    return response.json(results);
+  }
+);
 
 // HTTP POST
 app.post("/projects", (request, response) => {
   const { title, owner } = request.body;
 
   const project = {
-    id: uuid(),
+    id: v4(),
     title,
     owner,
   };

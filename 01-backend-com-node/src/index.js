@@ -1,5 +1,6 @@
 // imports
 const express = require("express");
+const cors = require("cors");
 const { v4, validate } = require("uuid");
 
 // => Atenção: as intruções devem ser definidas/executadas na ordem certa,
@@ -11,6 +12,7 @@ const app = express();
 // use() => middlewares
 // configurando para receber json no body
 app.use(express.json());
+app.use(cors());
 
 /**
  * Métodos HTTP:

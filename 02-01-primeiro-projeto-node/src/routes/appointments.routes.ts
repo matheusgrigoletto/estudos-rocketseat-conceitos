@@ -27,10 +27,10 @@ appointmentsRouter.post('/', (request, response) => {
       .json({ message: 'This appointment is already booked.' });
   }
 
-  const appointment: Appointment = appointmentsRepository.create(
+  const appointment: Appointment = appointmentsRepository.create({
     provider,
-    parsedDate,
-  );
+    date: parsedDate,
+  });
 
   return response.json(appointment);
 });

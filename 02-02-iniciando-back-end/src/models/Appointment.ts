@@ -15,21 +15,21 @@ class Appointment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'provider_id' })
-  providerId: string;
+  @Column()
+  provider_id: string;
 
   @ManyToOne(() => User)
-  @JoinColumn({ name: 'provider_id ' })
+  @JoinColumn({ name: 'provider_id' })
   provider: User;
 
   @Column('timestamp with time zone')
   date: Date;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  @CreateDateColumn()
+  created_at: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
 export default Appointment;

@@ -5,7 +5,7 @@ import router from './routes';
 import './database';
 
 const app: Express = express();
-
+app.use(express.json());
 app.use(router);
 
 app.listen(3333, () => {

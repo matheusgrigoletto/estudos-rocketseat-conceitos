@@ -4,7 +4,11 @@ import { parseISO } from 'date-fns';
 import AppointmentsRepository from '../repositories/AppointmentsRepository';
 import CreateAppointmentService from '../services/CreateAppointmentService';
 
+import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+
 const appointmentsRouter: Router = Router();
+
+appointmentsRouter.use(ensureAuthenticated);
 
 appointmentsRouter.get('/', async (_, response) => {
   const appointmentsRepository = getCustomRepository(AppointmentsRepository);
@@ -15,6 +19,7 @@ appointmentsRouter.get('/', async (_, response) => {
 
 appointmentsRouter.post('/', async (request, response) => {
   try {
+    // eslint-disable-next-line camelcase
     const { provider_id, date } = request.body;
     const parsedDate: Date = parseISO(date);
 

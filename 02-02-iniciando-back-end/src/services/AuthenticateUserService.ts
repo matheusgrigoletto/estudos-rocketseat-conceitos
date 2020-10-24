@@ -1,7 +1,7 @@
 import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-
+import authConfig from '../config/auth';
 import User from '../models/User';
 
 interface Request {
@@ -30,14 +30,11 @@ class AuthenticateUserService {
       throw new Error('Invalid credentials');
     }
 
-    const payload = {};
+    const { secret, expiresIn } = authConfig.jwt;
 
-    const secret =
-      '5C819645D7B6DDA56FDC17564B4E6AA31B8A68548DF739C5DFA8D038A4DFF665';
-
-    const token = sign(payload, secret, {
+    const token = sign({}, secret, {
       subject: user.id,
-      expiresIn: '1d',
+      expiresIn,
     });
 
     return {

@@ -33,7 +33,7 @@ usersRouter.patch(
   ensureAuthenticated,
   upload.single('avatar'),
   async (request, response) => {
-    return response.json({ ok: 'vai toma no cu' });
+    return response.json({ ok: 'OK' });
   },
 );
 
